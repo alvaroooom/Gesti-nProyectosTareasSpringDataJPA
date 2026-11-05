@@ -1,9 +1,7 @@
 package com.gestionproyectos.javialvaro.service;
 
-import com.gestionproyectos.javialvaro.model.Comentario;
 import com.gestionproyectos.javialvaro.model.Etiqueta;
 import com.gestionproyectos.javialvaro.model.Tarea;
-import com.gestionproyectos.javialvaro.repository.ComentarioRepository;
 import com.gestionproyectos.javialvaro.repository.TareaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +15,6 @@ import java.util.Optional;
 public class TareaService {
 
     private final TareaRepository tareaRepository;
-    private final ComentarioRepository comentarioRepository;
 
     public Tarea guardar(Tarea tarea) {
         return tareaRepository.save(tarea);
@@ -32,11 +29,10 @@ public class TareaService {
     }
 
     public void eliminar(Long id) {
-        // Primero se borran sus comentarios, porque apuntan a la tarea (clave ajena)
-        comentarioRepository.deleteAll(comentarioRepository.findByTareaId(id));
+        // Sus comentarios se borran solos por el cascade de Tarea.comentarios
         tareaRepository.deleteById(id);
     }
-    
+
     @Transactional(readOnly = true)
     public void mostrarDetalle(Long id) {
         Tarea tarea = tareaRepository.findById(id).orElse(null);
@@ -48,8 +44,7 @@ public class TareaService {
 
         System.out.println("Tarea: " + tarea.getTitulo());
 
-        List<Comentario> comentarios = comentarioRepository.findByTareaId(id);
-        System.out.println("Número de comentarios: " + comentarios.size());
+        System.out.println("Número de comentarios: " + tarea.getComentarios().size());
 
         System.out.println("Etiquetas:");
         for (Etiqueta etiqueta : tarea.getEtiquetas()) {
