@@ -29,7 +29,11 @@ public class Tarea {
     @ManyToOne
     private Proyecto proyecto;
 
-    // Unidireccional: Tarea es la propietaria y crea la tabla intermedia
+    // Regla A: al eliminar una tarea, sus comentarios se eliminan automáticamente
+    @OneToMany(mappedBy = "tarea", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comentario> comentarios = new ArrayList<>();
+
+    // Regla B: al eliminar una tarea, las etiquetas se conservan (no hay cascade)
     @ManyToMany
     private List<Etiqueta> etiquetas = new ArrayList<>();
 }
